@@ -3,7 +3,6 @@
 #include <inttypes.h>
 #include <cxxmidi/converters.hpp>
 #include <cxxmidi/file.hpp>
-#include <cxxmidi/note.hpp>
 
 typedef struct {
 	uint8_t sID;      /* SEvent type code                             */
@@ -144,12 +143,14 @@ void parseNextChunk(char* buffer, uint32_t& offset,uint32_t dt,uint8_t velocity,
 					//Note off
 					if (event.tied)
 					{
+						//Search for contiguous note with the sam pitch to tie with
 						bool found = false;
 						for (std::vector<MidiEvent>::iterator it2 = it + 1; it2 != events.end(); ++it2)
 						{
 							MidiEvent& event2 = *it2;
 							if ((event2.velocity > 0) && (event2.data == event.data) && (event2.time == event.time))
 								{
+								//Contiguous note found, don't insert note off for current note and note on for next
 									found = true;
 									events.erase(it2);
 									break;
@@ -158,7 +159,7 @@ void parseNextChunk(char* buffer, uint32_t& offset,uint32_t dt,uint8_t velocity,
 
 						if (!found)
 						{
-							std::cerr << "Cannnot find tied event. Ignoring tie." << std::endl;
+							std::cout << "Cannnot find tied event. Ignoring tie." << std::endl;
 							//Forcing Note off
 							track.push_back(CxxMidi::Event(event.time-time, // deltatime
 								CxxMidi::Message::NoteOn, // message type

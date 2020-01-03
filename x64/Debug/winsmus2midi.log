@@ -1,0 +1,6 @@
+﻿  main.cpp
+C:\Users\abonnin\Documents\smus2midi\main.cpp(38,42): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+C:\Users\abonnin\Documents\smus2midi\main.cpp(38,21): warning C4244: 'initialisation' : conversion de 'float' en 'uint32_t', perte possible de données
+C:\Users\abonnin\Documents\smus2midi\main.cpp(40,46): warning C4244: '*=' : conversion de 'float' en 'uint32_t', perte possible de données
+C:\Users\abonnin\Documents\smus2midi\main.cpp(245,15): warning C4244: 'initialisation' : conversion de 'std::streamoff' en 'int', perte possible de données
+  winsmus2midi.vcxproj -> C:\Users\abonnin\Documents\smus2midi\x64\Debug\winsmus2midi.exe
