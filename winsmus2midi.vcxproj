@@ -108,6 +108,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -153,7 +154,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="include\cxxmidi\guts\3rdparty\RtMidi\RtMidi.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -162,33 +162,19 @@
     <ClInclude Include="include\cxxmidi\event.hpp" />
     <ClInclude Include="include\cxxmidi\file.hpp" />
     <ClInclude Include="include\cxxmidi\guts\3rdparty\pstdint.h" />
-    <ClInclude Include="include\cxxmidi\guts\3rdparty\RtMidi\RtError.h" />
-    <ClInclude Include="include\cxxmidi\guts\3rdparty\RtMidi\RtMidi.h" />
     <ClInclude Include="include\cxxmidi\guts\compiler.hpp" />
     <ClInclude Include="include\cxxmidi\guts\endianness.hpp" />
-    <ClInclude Include="include\cxxmidi\guts\mutex.hpp" />
     <ClInclude Include="include\cxxmidi\guts\simulator.hpp" />
     <ClInclude Include="include\cxxmidi\guts\stdint.hpp" />
-    <ClInclude Include="include\cxxmidi\guts\thread.hpp" />
-    <ClInclude Include="include\cxxmidi\guts\unused.hpp" />
-    <ClInclude Include="include\cxxmidi\instrument.hpp" />
     <ClInclude Include="include\cxxmidi\message.hpp" />
-    <ClInclude Include="include\cxxmidi\note.hpp" />
     <ClInclude Include="include\cxxmidi\output\abstract.hpp" />
-    <ClInclude Include="include\cxxmidi\output\default.hpp" />
-    <ClInclude Include="include\cxxmidi\output\linux\alsa.hpp" />
-    <ClInclude Include="include\cxxmidi\output\windows.hpp" />
     <ClInclude Include="include\cxxmidi\player\abstract.hpp" />
-    <ClInclude Include="include\cxxmidi\player\asynchronous.hpp" />
-    <ClInclude Include="include\cxxmidi\player\synchronous.hpp" />
     <ClInclude Include="include\cxxmidi\sleep.hpp" />
-    <ClInclude Include="include\cxxmidi\sysex.hpp" />
     <ClInclude Include="include\cxxmidi\time\duration.hpp" />
     <ClInclude Include="include\cxxmidi\time\period.hpp" />
     <ClInclude Include="include\cxxmidi\time\point.hpp" />
     <ClInclude Include="include\cxxmidi\track.hpp" />
     <ClInclude Include="include\cxxmidi\utils.hpp" />
-    <ClInclude Include="include\cxxmidi\version.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

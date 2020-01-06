@@ -1,3 +1,5 @@
+#include <iostream>
+#include <vector>
 #include <algorithm>
 #include <cstdio>
 #include <inttypes.h>
@@ -132,8 +134,7 @@ void parseNextChunk(char* buffer, uint32_t& offset,uint32_t dt,uint8_t velocity,
 			{
 				track.push_back(CxxMidi::Event(0, // deltatime
 					CxxMidi::Message::ProgramChange, // message type
-					event.data, // program number
-					0)); // no data
+					event.data)); // program number
 
 			}
 			else
@@ -195,7 +196,7 @@ void parseNextChunk(char* buffer, uint32_t& offset,uint32_t dt,uint8_t velocity,
 			CxxMidi::Message::EndOfTrack));
 
 	}
-	else if (str.compare("INS1"))
+	else if (str.compare("INS1")==0)
 	{
 		//Instrument
 		std::string name;
@@ -207,7 +208,7 @@ void parseNextChunk(char* buffer, uint32_t& offset,uint32_t dt,uint8_t velocity,
 	{
 		//Name , (c) , AUTH , ANNO
 		std::string text;
-		for (uint32_t i = 9; i < length; ++i)
+		for (uint32_t i = 8; i < length; ++i)
 			text += buffer[offset + i];
 		std::cout << "Found " << str << " chunk with length = " << length << " and text = " << text <<
 			" -(for your information only , not using this chunk)." << std::endl;
