@@ -12,7 +12,7 @@ typedef struct {
 } SEvent;
 
 
-typedef struct{
+typedef struct {
 	uint32_t time; //ABSOLUTE Time
 	uint8_t data;//pitxh or program number
 	uint8_t velocity;
@@ -20,11 +20,11 @@ typedef struct{
 	bool progChange;
 } MidiEvent;
 
-bool MidiEventCompare(const MidiEvent& i,const MidiEvent& j) { return (i.time < j.time); }
+bool MidiEventCompare(const MidiEvent& i, const MidiEvent& j) { return (i.time < j.time); }
 
 
 
-void parseSEvent(unsigned char* buffer, uint32_t offset,uint32_t dt, uint32_t & time,uint8_t &velocity,std::vector<MidiEvent> &events)
+void parseSEvent(unsigned char* buffer, uint32_t offset, uint32_t dt, uint32_t& time, uint8_t& velocity, std::vector<MidiEvent>& events)
 {
 	unsigned char sID = buffer[offset];
 	if ((0 <= sID) && (128 >= sID))
@@ -38,7 +38,7 @@ void parseSEvent(unsigned char* buffer, uint32_t offset,uint32_t dt, uint32_t & 
 
 		uint32_t duration = dt * (powf(2.0f, 2 - division)) * (dot ? 1.5f : 1.0f);
 		if (nTuplet > 0)
-			duration *= (2*nTuplet) / (2*nTuplet+1.0f);
+			duration *= (2 * nTuplet) / (2 * nTuplet + 1.0f);
 		uint32_t nextStart = chord ? 0 : duration;
 
 		if (sID < 128)
@@ -87,26 +87,26 @@ void parseSEvent(unsigned char* buffer, uint32_t offset,uint32_t dt, uint32_t & 
 			//set volume
 			velocity = buffer[offset + 1];
 			break;
-		default :
+		default:
 			break;
 		}
 }
 
 uint32_t computeLength(unsigned char* buffer, uint32_t offset)
 {
-	uint32_t length = (buffer[offset] << 24) + (buffer[offset+1] << 16) + (buffer[offset+2] << 8) + (buffer[offset+3] + 8);
+	uint32_t length = (buffer[offset] << 24) + (buffer[offset + 1] << 16) + (buffer[offset + 2] << 8) + (buffer[offset + 3] + 8);
 	return length;
 }
 
-void parseNextChunk(char* buffer, uint32_t& offset,uint32_t dt,uint8_t velocity, CxxMidi::File &myFile)
+void parseNextChunk(char* buffer, uint32_t& offset, uint32_t dt, uint8_t velocity, CxxMidi::File& myFile)
 {
 	std::string str;
 	str += buffer[offset];
 	str += buffer[offset + 1];
 	str += buffer[offset + 2];
 	str += buffer[offset + 3];
-	
-	uint32_t length = computeLength((unsigned char *)buffer,offset+4);
+
+	uint32_t length = computeLength((unsigned char*)buffer, offset + 4);
 
 	if (str.compare("TRAK") == 0)
 	{
@@ -120,14 +120,14 @@ void parseNextChunk(char* buffer, uint32_t& offset,uint32_t dt,uint8_t velocity,
 
 		for (uint32_t pSEvent = offset + 8; pSEvent < offset + length; pSEvent += 2)
 		{
-			parseSEvent((unsigned char*)buffer, pSEvent, dt,time,velocity,events);
+			parseSEvent((unsigned char*)buffer, pSEvent, dt, time, velocity, events);
 		}
 
 		std::stable_sort(events.begin(), events.end(), MidiEventCompare);
 
 		time = 0;
 
-		for (std::vector<MidiEvent>::iterator it = events.begin(); it!=events.end(); ++it)
+		for (std::vector<MidiEvent>::iterator it = events.begin(); it != events.end(); ++it)
 		{
 			MidiEvent& event = *it;
 			if (event.progChange)
@@ -150,24 +150,24 @@ void parseNextChunk(char* buffer, uint32_t& offset,uint32_t dt,uint8_t velocity,
 						{
 							MidiEvent& event2 = *it2;
 							if ((event2.velocity > 0) && (event2.data == event.data) && (event2.time == event.time))
-								{
+							{
 								//Contiguous note found, don't insert note off for current note and note on for next
-									found = true;
-									events.erase(it2);
-									break;
-								}
+								found = true;
+								events.erase(it2);
+								break;
+							}
 						}
 
 						if (!found)
 						{
 							std::cout << "Cannnot find tied event. Ignoring tie." << std::endl;
 							//Forcing Note off
-							track.push_back(CxxMidi::Event(event.time-time, // deltatime
+							track.push_back(CxxMidi::Event(event.time - time, // deltatime
 								CxxMidi::Message::NoteOn, // message type
 								event.data, // pitch
 								0)); // velocity = 0 => NoteOff
 						}
-													
+
 					}
 					else
 					{
@@ -196,7 +196,7 @@ void parseNextChunk(char* buffer, uint32_t& offset,uint32_t dt,uint8_t velocity,
 			CxxMidi::Message::EndOfTrack));
 
 	}
-	else if (str.compare("INS1")==0)
+	else if (str.compare("INS1") == 0)
 	{
 		//Instrument
 		std::string name;
@@ -204,7 +204,7 @@ void parseNextChunk(char* buffer, uint32_t& offset,uint32_t dt,uint8_t velocity,
 			name += buffer[offset + i];
 		std::cout << "Found instrument with length = " << length << " and name = '" << name << "' -(for your information only , not using this chunk)." << std::endl;
 	}
-	else 
+	else
 	{
 		//Name , (c) , AUTH , ANNO
 		std::string text;
@@ -219,8 +219,14 @@ void parseNextChunk(char* buffer, uint32_t& offset,uint32_t dt,uint8_t velocity,
 }
 
 
-int main(int argc,char ** argv)
+int main(int argc, char** argv)
 {
+	if (argc == 1)
+	{
+		std::cout << "USAGE : " << argv[0] << " smus_file1 [smus_file2 [smus_file3 [...] ] ]" << std::endl;
+		exit(0);
+	}
+
 	uint32_t dt; // quartenote deltatime [ticks]
 	// What value should dt be, if we want quarter notes to last 0.5s?
 
@@ -250,10 +256,6 @@ int main(int argc,char ** argv)
 			// read data as a block:
 			smusFile.read(buffer, length);
 
-			if (smusFile)
-				std::cout << "all characters read successfully." << std::endl;
-			else
-				std::cout << "error: only " << smusFile.gcount() << " could be read" << std::endl;
 			smusFile.close();
 
 			// ...buffer contains the entire file...
@@ -328,7 +330,7 @@ int main(int argc,char ** argv)
 				}
 			}
 
-			
+
 			delete[] buffer;
 		}
 		else
