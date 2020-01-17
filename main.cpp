@@ -13,7 +13,7 @@ typedef struct {
 
 
 typedef struct{
-	uint32_t time;
+	uint32_t time; //ABSOLUTE Time
 	uint8_t data;//pitxh or program number
 	uint8_t velocity;
 	bool tied;
@@ -232,10 +232,9 @@ int main(int argc,char ** argv)
 
 	for (int i = 1; i < argc; ++i)
 	{
+		std::cout << "============= Parsing " << argv[i] << " ==============" << std::endl;
 
 		CxxMidi::File myFile;
-
-		std::cout << "Opening " << argv[i] << "...\n";
 
 		std::ifstream smusFile(argv[i], std::ifstream::binary);
 
@@ -247,7 +246,7 @@ int main(int argc,char ** argv)
 
 			char* buffer = new char[length];
 
-			std::cout << "Reading " << length << " characters... ";
+			std::cout << "Reading " << length << " characters... " << std::endl;
 			// read data as a block:
 			smusFile.read(buffer, length);
 
@@ -267,7 +266,6 @@ int main(int argc,char ** argv)
 			if (form.compare("FORM"))
 			{
 				std::cerr << "Cant find FORM chunk. Exiting." << std::endl;
-				return -1;
 			}
 			else
 			{
@@ -283,7 +281,6 @@ int main(int argc,char ** argv)
 				if (smus.compare("SMUS"))
 				{
 					std::cerr << "Cant find SMUS. Exiting." << std::endl;
-					return -1;
 				}
 				else
 				{
@@ -297,7 +294,6 @@ int main(int argc,char ** argv)
 					if (shdr.compare("SHDR"))
 					{
 						std::cerr << "Cant find SHDR. Exiting." << std::endl;
-						return -1;
 					}
 					else
 					{
@@ -319,12 +315,20 @@ int main(int argc,char ** argv)
 
 						while (offset < formLength)
 							parseNextChunk(buffer, offset, dt, velocity, myFile);
+
+						std::string newTitle(argv[i]);
+						std::string newExtension(".mid");
+						size_t dotIndex = newTitle.find('.');
+						newTitle.replace(dotIndex, newTitle.length() - dotIndex, newExtension);
+						myFile.saveAs(newTitle.c_str());
+						std::cout << "============= " << newTitle << " saved! ==============" << std::endl;
+
+
 					}
 				}
 			}
 
-			myFile.saveAs((std::string(argv[i])+".mid").c_str());
-
+			
 			delete[] buffer;
 		}
 		else
