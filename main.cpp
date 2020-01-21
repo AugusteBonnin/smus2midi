@@ -184,7 +184,7 @@ void parseNextChunk(char* buffer, uint32_t& offset, uint32_t dt, uint8_t velocit
 					track.push_back(CxxMidi::Event(event.time - time, // deltatime
 						CxxMidi::Message::NoteOn, // message type
 						event.data, // pitch
-						event.velocity)); // velocity = 0 => NoteOff
+						event.velocity)); //velocity
 				}
 
 
@@ -226,15 +226,6 @@ int main(int argc, char** argv)
 		std::cout << "USAGE : " << argv[0] << " smus_file1 [smus_file2 [smus_file3 [...] ] ]" << std::endl;
 		exit(0);
 	}
-
-	uint32_t dt; // quartenote deltatime [ticks]
-	// What value should dt be, if we want quarter notes to last 0.5s?
-
-	// Default MIDI time division is 500ticks/quarternote.
-	// Default MIDI tempo is 500000us per quarternote
-	dt = CxxMidi::Converters::us2dt(500000, // 0.5s
-		500000, // tempo [us/quarternote]
-		500); // time division [us/quarternote]
 
 	for (int i = 1; i < argc; ++i)
 	{
@@ -304,8 +295,18 @@ int main(int argc, char** argv)
 						uint32_t shdrLength = computeLength((unsigned char*)buffer, 16);
 						std::cout << "SHDR chunk length = " << shdrLength << std::endl;
 						unsigned char* unsignedBuffer = (unsigned char*)buffer;
-						uint16_t tempo = (unsignedBuffer[20] << 8) + unsignedBuffer[21];
-						std::cout << "Found Tempo = " << tempo << ". Ignoring , tempo is set to 120bpm by default." << std::endl;
+						uint16_t tempo = ((unsignedBuffer[20] << 8) + unsignedBuffer[21])>>7;
+						std::cout << "Found Tempo = " << tempo << " bpm. " << std::endl;
+
+						uint32_t dt; // quartenote deltatime [ticks]
+	// What value should dt be, if we want quarter notes to last 0.5s?
+
+	// Default MIDI time division is 500ticks/quarternote.
+	// Default MIDI tempo is 500000us per quarternote
+						dt = CxxMidi::Converters::us2dt(500000*120/tempo, // 0.5s
+							500000, // tempo [us/quarternote]
+							500); // time division [ticks/quarternote]
+
 						uint8_t velocity = unsignedBuffer[22];
 						std::cout << "Found Volume = " << (int)velocity << std::endl;
 						uint8_t tracks = unsignedBuffer[23];
